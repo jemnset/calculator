@@ -49,10 +49,19 @@ button {
     flex: 1 1 20%;
 }
 
+.advancedOperatorSection button {
+    background-color: rgb(219, 217, 217);
+}
+
 .digitSection {
     display: flex;
     flex: 1 1 80%;
     flex-wrap: wrap;
+}
+
+.digitSection button {
+    background-color: rgb(71, 70, 70);
+    color: white;
 }
 
 .leftSection{
@@ -71,4 +80,10 @@ button {
     display: flex;
     flex-direction: column;
     flex: 1 1 100%;
+}
+
+.operatorSection button{
+    background-color: orange;
+    color: white;
+    font-size: 28pt;
 }

@@ -2,7 +2,7 @@ const Operators = Object.freeze({
     ADD:"+",
     SUBTRACT:"-",
     DIVIDE:"/",
-    MULTIPLY:"*",
+    MULTIPLY:"×",
     PLUS_MINUS: "+/-",
     PERCENTAGE: "%",
     EQUALS: "=",
@@ -26,10 +26,11 @@ for(let btn of digits){
     btn.addEventListener("click", () => {
 
         if(operator === Operators.UNSELECTED || operator === Operators.EQUALS){
-            num1 = parseInt(num1 + btn.textContent);
+
+            num1 = parseFloat(num1 + btn.textContent);
             display.textContent = num1;
         }else{
-            num2 = parseInt(num2 + btn.textContent);
+            num2 = parseFloat(num2 + btn.textContent);
             display.textContent = num2;
         }
 
@@ -40,8 +41,6 @@ const operators = document.querySelectorAll(".operator");
 
 for(let btn of operators){
     btn.addEventListener("click", () => {
-        console.log(btn.textContent);
-
         if(operator != Operators.UNSELECTED){
             displayNumber = operate(num1, num2, operator);
             display.textContent = displayNumber;
