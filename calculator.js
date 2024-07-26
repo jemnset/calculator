@@ -6,16 +6,16 @@ const Operators = Object.freeze({
     PLUS_MINUS: "+/-",
     PERCENTAGE: "%",
     EQUALS: "=",
-    UNSELECTED: "UNSELECTED"
+    UNSELECTED: null
 });
 
 const divideByZeroMsg = "OOPS";
 
-let num1 = 0;
-let num2 = 0;
+let num1 = null;
+let num2 = null;
 let operator = Operators.UNSELECTED;
 
-let displayNumber = 0;
+let displayNumber = null;
 
 const display = document.querySelector(".display");
 clear();
@@ -25,34 +25,42 @@ const digits = document.querySelectorAll(".digit");
 for(let btn of digits){   
     btn.addEventListener("click", () => {
 
-        if(operator === Operators.UNSELECTED || operator === Operators.EQUALS){
-
-            num1 = parseFloat(num1 + btn.textContent);
-            display.textContent = num1;
-        }else{
-            num2 = parseFloat(num2 + btn.textContent);
-            display.textContent = num2;
-        }
+        //console.log("num1: " + num1);
+        //console.log("num2: " + num2);
+        displayNumber === null ? displayNumber = btn.textContent : displayNumber += btn.textContent;
+        updateDisplay(displayNumber);
 
     });
 }
 
 const operators = document.querySelectorAll(".operator");
 
+
+//9.3 + 3 = * 2
 for(let btn of operators){
     btn.addEventListener("click", () => {
-        if(operator != Operators.UNSELECTED){
-            displayNumber = operate(num1, num2, operator);
-            display.textContent = displayNumber;
-            displayNumber === divideByZeroMsg ? num1 = 0 : num1 = displayNumber;
-            num2 = 0;
+
+        if(display.textContent.indexOf(".") != display.textContent.length - 1){
+            console.log(`Before operation: ${num1} ${operator} ${num2}`);
+            if(operator != Operators.UNSELECTED){
+                num2 = Number(displayNumber);
+                displayNumber = operate(num1, num2, operator);
+                displayNumber === divideByZeroMsg ? num1 = 0 : num1 = Number(displayNumber);
+                updateDisplay(displayNumber);
+                num2 = 0;
+            }
+            
+            if(btn.textContent === Operators.EQUALS){
+                operator = Operators.UNSELECTED;
+            }
+            else{
+                operator = btn.textContent;
+            }
+            num1 = Number(display.textContent);
+            displayNumber = null;
+
         }
-        
-        if(btn.textContent === Operators.EQUALS){
-            operator = Operators.UNSELECTED;
-        }
-        else
-            operator = btn.textContent;
+        console.log(`After operation: ${num1} ${operator} ${num2}`);
     });
 }
 
@@ -61,17 +69,39 @@ reset.addEventListener("click", () => {
     clear();
 });
 
+const percentage = document.querySelector(".btnPercentage");
+percentage.addEventListener("click", () => {
+    displayNumber = roundNumber(Number(display.textContent)/100, 15);
+    updateDisplay(displayNumber);
+})
+
+const plusminus = document.querySelector(".btnPlusMinus");
+plusminus.addEventListener("click", () => {
+    displayNumber = roundNumber(Number(display.textContent) * -1, 15);
+    updateDisplay(displayNumber);
+})
+
+//need to be able to select decimal when displayNumber is zero
+//cannot have multiple decimal spots
+const decimal = document.querySelector(".btnDecimal");
+decimal.addEventListener("click", () => {
+    if(displayNumber === null || !displayNumber.toString().includes(".")){
+        displayNumber = display.textContent + ".";
+        updateDisplay(displayNumber);
+    }
+})
+
 function operate(a, b, operator){
 
     switch(operator) {
         case Operators.ADD:
-            return add(a,b);
+            return roundNumber(add(a,b), 15);
         case Operators.SUBTRACT:
-            return subtract(a,b);
+            return roundNumber(subtract(a,b), 15);
         case Operators.MULTIPLY:
-            return multiply(a,b);
+            return roundNumber(multiply(a,b), 15);
         case Operators.DIVIDE:
-            return divide(a,b);
+            return roundNumber(divide(a,b), 15);
     };
 }
 
@@ -97,10 +127,23 @@ function divide(a, b){
 }
 
 function clear(){
-    num1 = 0;
-    num2 = 0;
+    num1 = null;
+    num2 = null;
     operator = Operators.UNSELECTED;
-    displayNumber = 0;
-    display.textContent = displayNumber;
+    displayNumber = null;
+    updateDisplay(displayNumber);
     //clear the display
+}
+
+function updateDisplay(numString){
+    let str = numString === null ? 0 : numString.toString();
+    if(str.length >= 12)
+        str = str.toString().substring(0, 12);
+
+    display.textContent = str;
+}
+
+//9.3 * 3
+function roundNumber(num, place){
+    return Number(Math.round(num + "e" + place) + "e-" + place);
 }
